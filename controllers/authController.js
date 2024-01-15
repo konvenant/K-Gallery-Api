@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
+const Settings = require('../models/Settings');
 const bodyParser = require("body-parser");
 const emailUtils = require('../utils/emailUtils');
 const authService = require('../services/authService');
@@ -15,7 +16,10 @@ const signup = async (req, res) => {
     const password = req.body.password;
     const email = req.body.email;
     const date = new Date();
-
+    const darkMode = true
+    const language = "English"
+    const notificationOn = true
+    const sendNewsLetter = true
 const saltRounds = 10;
 
 const hashPassword = async (password) => {
@@ -65,6 +69,15 @@ const user = new User({
   isRead:false,
   action: "open-details"
 });
+
+const settings = new Settings({
+  email: email,
+  darkMode: darkMode,
+  language: language,
+  notificationOn: notificationOn,
+  sendNewsLetter: sendNewsLetter,
+  lastAction: date
+});
   
 
 User.findOne({email:req.body.email}).then((foundUser)=>{
@@ -73,6 +86,7 @@ User.findOne({email:req.body.email}).then((foundUser)=>{
   } else {
     user.save().then(()=>{
        notice.save().then(()=>{
+        settings.save()
         res.status(201).json({ message: 'User registered successfully. Check your email for verification code' });
         const verificationToken = authService.generateEmailVerificationToken(user._id);
     emailUtils.sendVerificationEmail(user.email, emailVerificationToken);
