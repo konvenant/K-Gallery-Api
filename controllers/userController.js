@@ -16,7 +16,6 @@ const storage = multer.diskStorage({});
 
 const upload = multer({ storage });
 
-
 const getUserDetails = async (req, res) => {
   try {
     const email = req.params.email;
@@ -146,7 +145,7 @@ const getNotificationCount = async (req,res) => {
       console.log(err)
     });
   } catch{
-    res.status(500).json({ message: 'An error occurred' });
+    res.status(500).json({ message: 'Internal server Error' });
   }
 }
 

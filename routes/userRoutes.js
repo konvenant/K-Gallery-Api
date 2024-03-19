@@ -6,7 +6,7 @@ const userRouter = express.Router();
 const Notification = require('../models/Notification')
 
 const upload = multer({ dest: 'uploads/' }); // Specify your upload directory
-
+ 
 
 // userRouter.use(authenticationMiddleware.authenticate);
 userRouter.get('/details/:email', userController.getUserDetails);
