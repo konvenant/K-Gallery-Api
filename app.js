@@ -14,6 +14,7 @@ const favoriteImageRouter = require('./routes/FavoriteImageRoutes');
 const favoriteVideoRouter = require('./routes/FavoriteVideoRoutes');
 const getUserRouter = require('./routes/getUserRoutes');
 const settingsRouter = require('./routes/settingsRoutes');
+const chatRouter = require('./routes/chatRoutes');
 require('dotenv').config();
 
 
@@ -50,6 +51,7 @@ app.use('/action',favoriteImageRouter);
 app.use('/action',favoriteVideoRouter);
 app.use("/action",getUserRouter);
 app.use("/action", settingsRouter);
+app.use("/action", chatRouter);
 
 
 const port = process.env.PORT || 3000;
