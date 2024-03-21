@@ -70,11 +70,81 @@ fetchSentItems(email)
   })
   .catch(error => {
     console.error("Error:", error);
-    res.status(200).json({ message: errror.message });
+    res.status(401).json({ message: errror.message });
   });
     } catch (error) {
-        
+      res.status(500).json({ message: 'An error occurred' });
     }
 }
 
-module.exports = {getAllChatEmails};
+
+
+async function fetchChatList(email1, email2) {
+  try {
+    // Find sent items from email1 to email2
+    const sentItems1to2 = await Promise.all([
+      SendImage.find({ fromEmail: email1, toEmail: email2 }),
+      SendVideo.find({ fromEmail: email1, toEmail: email2 })
+    ]);
+
+    // Find sent items from email2 to email1
+    const sentItems2to1 = await Promise.all([
+      SendImage.find({ fromEmail: email2, toEmail: email1 }),
+      SendVideo.find({ fromEmail: email2, toEmail: email1 })
+    ]);
+
+    // Combine all sent items
+    const allSentItems = [...sentItems1to2[0], ...sentItems1to2[1], ...sentItems2to1[0], ...sentItems2to1[1]];
+
+    // Sort items by timestamp
+    allSentItems.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // Format items
+    const formattedChatList = allSentItems.map(item => ({
+      sender: item.fromEmail === email1 ? email1 : email2,
+      caption: item.caption,
+      url: item.imageUrl || item.videoUrl,
+      timeStamp: item.date,
+      isFromMe: item.fromEmail === email1,
+      isVideo: !!item.videoUrl,
+      isImage: !!item.imageUrl,
+      isSenderDeleted: item.isSenderDeleted,
+      isReceiverDeleted: item.isReceiverDeleted,
+      delivered: item.delivered,
+      read: item.read,
+      dateRecieverDelete:item.dateRecieverDelete,
+      dateSenderDelete:item.dateSenderDelete
+    }));
+
+    return formattedChatList;
+  } catch (error) {
+    console.error("Error fetching chat list:", error);
+    throw error;
+  }
+}
+
+
+
+const getAllChatMessages = async(req,res) => {
+  try {
+      const email1 = req.params.email1;
+      const email2 = req.params.email2;
+
+
+      fetchChatList(email1, email2)
+      .then(chatList => {
+        console.log("Chat list:", chatList);
+        res.status(200).json({ chatMessages: chatList });
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        // Handle error
+      });
+  } catch (error) {
+    res.status(500).json({ message: 'An error occurred' });
+  }
+}
+
+
+
+module.exports = {getAllChatEmails, getAllChatMessages};

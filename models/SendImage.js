@@ -16,3 +16,4 @@ const sendImageSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('SendImage', sendImageSchema);
+
