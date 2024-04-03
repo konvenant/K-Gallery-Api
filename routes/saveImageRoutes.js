@@ -21,7 +21,7 @@ saveImageRouter.post('/save-image/:email/:caption', upload.single('image'), asyn
        const email = req.params.email;
        const date = new Date()
        const caption = req.params.caption;
-      const imageUrl = await   saveImageController.saveImage(req.file);
+      const imageUrl = await   saveImageController.sendImage(req.file);
 
 
       const savedImage = new SaveImage({
